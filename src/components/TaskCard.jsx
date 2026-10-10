@@ -14,6 +14,7 @@ function TaskCard({
     title,
     course,
     deadline,
+    deadlineTime,
     priority,
     completed,
     onDeleteSuccess,
@@ -141,6 +142,10 @@ function TaskCard({
                 <div className="mt-5">
                     <p className="text-sm text-textMuted">
                         Deadline: {formattedDeadline}
+                    </p>
+
+                    <p className="mt-1 text-sm text-textMuted">
+                        Pukul {deadlineTime || "09:00"} WITA
                     </p>
 
                     <p

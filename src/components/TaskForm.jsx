@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
+
 import { useTask } from "../context/TaskContext";
+import TimePicker from "./TimePicker";
 
 function TaskForm({ task, onSuccess }) {
     const { addTask, updateTask } = useTask();
@@ -8,10 +11,12 @@ function TaskForm({ task, onSuccess }) {
     const [title, setTitle] = useState(task?.title || "");
     const [course, setCourse] = useState(task?.course || "");
     const [deadline, setDeadline] = useState(task?.deadline || "");
+    const [deadlineTime, setDeadlineTime] = useState(
+        task?.deadlineTime || "09:00"
+    );
     const [priority, setPriority] = useState(
         task?.priority || "Sedang"
     );
-
     const [errorMessage, setErrorMessage] = useState("");
 
     const isEditMode = Boolean(task);
@@ -30,7 +35,7 @@ function TaskForm({ task, onSuccess }) {
         }
 
         if (!deadline) {
-            setErrorMessage("Deadline wajib dipilih.");
+            setErrorMessage("Tanggal deadline wajib dipilih.");
             return;
         }
 
@@ -40,6 +45,7 @@ function TaskForm({ task, onSuccess }) {
                 title: title.trim(),
                 course: course.trim(),
                 deadline,
+                deadlineTime,
                 priority,
             };
 
@@ -51,6 +57,7 @@ function TaskForm({ task, onSuccess }) {
                 title: title.trim(),
                 course: course.trim(),
                 deadline,
+                deadlineTime,
                 priority,
                 completed: false,
             };
@@ -62,6 +69,7 @@ function TaskForm({ task, onSuccess }) {
         setTitle("");
         setCourse("");
         setDeadline("");
+        setDeadlineTime("09:00");
         setPriority("Sedang");
         setErrorMessage("");
     };
@@ -79,7 +87,7 @@ function TaskForm({ task, onSuccess }) {
             <p className="mt-1 text-sm leading-6 text-textMuted">
                 {isEditMode
                     ? "Perbarui informasi tugasmu."
-                    : "Tambahkan tugas baru agar semua kegiatan kuliahmu lebih teratur."}
+                    : "Tambahkan tugas baru agar kegiatan kuliahmu lebih teratur."}
             </p>
 
             {errorMessage && (
@@ -96,11 +104,15 @@ function TaskForm({ task, onSuccess }) {
             )}
 
             <div className="mt-5">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label
+                    htmlFor="task-title"
+                    className="block text-sm font-semibold text-gray-700"
+                >
                     Nama tugas
                 </label>
 
                 <input
+                    id="task-title"
                     type="text"
                     placeholder="Contoh: Implementasi React"
                     value={title}
@@ -113,11 +125,15 @@ function TaskForm({ task, onSuccess }) {
             </div>
 
             <div className="mt-4">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label
+                    htmlFor="task-course"
+                    className="block text-sm font-semibold text-gray-700"
+                >
                     Mata kuliah
                 </label>
 
                 <input
+                    id="task-course"
                     type="text"
                     placeholder="Contoh: Pemrograman Web"
                     value={course}
@@ -130,11 +146,15 @@ function TaskForm({ task, onSuccess }) {
             </div>
 
             <div className="mt-4">
-                <label className="block text-sm font-semibold text-gray-700">
-                    Deadline
+                <label
+                    htmlFor="task-deadline"
+                    className="block text-sm font-semibold text-gray-700"
+                >
+                    Tanggal deadline
                 </label>
 
                 <input
+                    id="task-deadline"
                     type="date"
                     value={deadline}
                     onChange={(e) => {
@@ -146,11 +166,22 @@ function TaskForm({ task, onSuccess }) {
             </div>
 
             <div className="mt-4">
-                <label className="block text-sm font-semibold text-gray-700">
+                <TimePicker
+                    value={deadlineTime}
+                    onChange={setDeadlineTime}
+                />
+            </div>
+
+            <div className="mt-4">
+                <label
+                    htmlFor="task-priority"
+                    className="block text-sm font-semibold text-gray-700"
+                >
                     Prioritas
                 </label>
 
                 <select
+                    id="task-priority"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
                     className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
@@ -181,9 +212,16 @@ function TaskForm({ task, onSuccess }) {
                 </p>
 
                 <p className="mt-1 text-sm text-textMuted">
-                    Deadline:{" "}
+                    Tanggal:{" "}
                     <span className="font-semibold text-gray-700">
                         {deadline || "Belum diisi"}
+                    </span>
+                </p>
+
+                <p className="mt-1 text-sm text-textMuted">
+                    Waktu:{" "}
+                    <span className="font-semibold text-gray-700">
+                        {deadlineTime}
                     </span>
                 </p>
 
@@ -199,9 +237,7 @@ function TaskForm({ task, onSuccess }) {
                 type="submit"
                 className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
-                {isEditMode
-                    ? "Simpan Perubahan"
-                    : "Buat Tugas"}
+                {isEditMode ? "Simpan Perubahan" : "Buat Tugas"}
             </button>
         </form>
     );

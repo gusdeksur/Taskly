@@ -3,36 +3,52 @@ import { createContext, useContext, useEffect, useState } from "react";
 const TaskContext = createContext();
 
 function TaskProvider({ children }) {
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("taskly-tasks");
+    const [tasks, setTasks] = useState(() => {
+        const savedTasks = localStorage.getItem("taskly-tasks");
 
-    if (savedTasks) {
-      return JSON.parse(savedTasks);
-    }
+        if (savedTasks) {
+            return JSON.parse(savedTasks);
+        }
 
-    return [];
-  });
+        return [];
+    });
 
-  useEffect(() => {
-    localStorage.setItem("taskly-tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    useEffect(() => {
+        localStorage.setItem("taskly-tasks", JSON.stringify(tasks));
+    }, [tasks]);
 
     const addTask = (newTask) => {
+        const taskWithCreationTime = {
+            ...newTask,
+            createdAt: newTask.createdAt ?? new Date().toISOString(),
+        };
+
         setTasks((currentTasks) => [
             ...currentTasks,
-            newTask,
+            taskWithCreationTime,
         ]);
     };
 
     const toggleTask = (id) => {
         setTasks((currentTasks) =>
-            currentTasks.map((task) =>
-                task.id === id
-                    ? { ...task, completed: !task.completed }
-                    : task
-            )
+            currentTasks.map((task) => {
+                if (task.id !== id) {
+                    return task;
+                }
+
+                const willComplete = !task.completed;
+
+                return {
+                    ...task,
+                    completed: willComplete,
+                    completedAt: willComplete
+                        ? new Date().toISOString()
+                        : null,
+                };
+            })
         );
     };
+
 
     const removeTask = (id) => {
         setTasks((currentTasks) =>
